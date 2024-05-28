@@ -6,6 +6,7 @@ import com.sparta.myselectshop.dto.ProductResponseDto;
 import com.sparta.myselectshop.security.UserDetailsImpl;
 import com.sparta.myselectshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,13 +30,14 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public List<ProductResponseDto> getProducts(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return productService.getProducts(userDetails.getUser());
-    }
+    public Page<ProductResponseDto> getProducts(
+            @RequestParam("page") int page, //page는 client에서는 1부터 시작, pageable에서는 0부터시작
+            @RequestParam("size") int size,
+            @RequestParam("sortBy") String sortBy,
+            @RequestParam("isAsc") Boolean isAsc,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-    @GetMapping("/admin/products")
-    public List<ProductResponseDto> getAllProducts() {
-        return productService.getAllProducts();
+        return productService.getProducts(userDetails.getUser(), page-1, size, sortBy, isAsc);
     }
 
 }
